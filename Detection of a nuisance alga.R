@@ -48,7 +48,7 @@ Cq.meta$qPCR_presence=as.integer(ifelse(Cq.meta$Cq.Mean>0, 1, 0))
 Cq.meta$SQ.E=Cq.meta$Threshold/(Cq.meta$E^(Cq.meta$Cq)) #threshold and efficiency calculated for each qPCR sample plate
 Cq.meta$SQ.E=as.numeric(Cq.meta$SQ.E)
 
-Cq.data.new=subset(Cq.meta, Project=="Classification") #subset data to be predicted from model, change project to match metadata
+Cq.data.new=subset(Cq.meta, Project=="Classification" | Project=="Motivating") #subset data to be predicted from model, change project to match metadata
 
 ## 4. RANDOM FOREST MODEL
 #The trained RF model using data from Nichols et al. (2023) can be loaded to begin classification of new sites.
