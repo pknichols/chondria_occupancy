@@ -13,7 +13,7 @@ library(dplyr)
 #* Location (site location identifier)
 #* Depth_m (depth in meters of site)
 
-meta=read.csv("1metadata.csv", header = T)
+meta=read.csv("1metadata_example.csv", header = T)
 
 ## 2. qPCR PLATE DATA
 #Platedata file must contain the following columns:
@@ -24,7 +24,7 @@ meta=read.csv("1metadata.csv", header = T)
 #* Threshold (calculated quantification threshold per sample plate)
 #* E (calculated efficiency per plate)
 
-plate.all=read.csv("1platedata.csv", header=T)
+plate.all=read.csv("1platedata_example.csv", header=T)
 plate.all$SampleID=as.factor(as.character(plate.all$SampleID))
 
 metadata.all=merge(meta, plate.all)
@@ -34,9 +34,8 @@ metadata.all=merge(meta, plate.all)
   
 #* ID (unique to each qPCR reaction, must match platedata)
 #* Cq-value (calculated per qPCR reaction, left blank if no amplification)
-#* 
-#* Cq.all=read.csv("1Quantification_Cq_Results.csv", header=T)
-#Cq.all$Cq.Mean=as.numeric(Cq.all$Cq.Mean)
+
+Cq.all=read.csv("1Quantification_Cq_Results_example.csv", header=T)
 Cq.all$Cq.Mean=Cq.all$Cq
 Cq.all$Cq.Mean[is.na(Cq.all$Cq.Mean)]=0
 
@@ -66,4 +65,4 @@ predictions=ddply(Cq.data.new, .(Location), summarise,  Positive_replicates=sum(
 
 write.csv(predictions, file="2sitepredictions.csv", row.names = F)
 
-ggplot(predictions, aes(x=Location, y=Percent_positive, fill=Location)) + geom_bar(stat="identity", color="black", position=position_dodge()) + labs(x="", y="Positive Technical Replicates (%)") + ggtitle("RF Model Predictions") + ylim(0,100) + theme_minimal() + theme(legend.position = "none")
+ggplot(predictions, aes(x=Location, y=Percent_positive, fill=Location)) + geom_bar(stat="identity", color="black", position=position_dodge()) + labs(x="", y="Positive Technical Replicates (%)") + ggtitle("RF Model Predictions") + ylim(0,100) + theme_minimal() + theme(legend.position = "none", axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
