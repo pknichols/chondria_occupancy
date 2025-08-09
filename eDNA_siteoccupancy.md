@@ -16,8 +16,8 @@ site-occupancy detection model predictors (habitat covariates).
 To run the analysis, users must have two files:
 
 - **Cq Data** $`\Rightarrow`$ qPCR data with Cq-values as exported from
-  the BMS MIC software. Columns must include: -*Well* (corresponds to
-  well location in BMS MIC run; numerical 1-48)
+  the BMS MIC Workbench software. Columns must include: -*Well*
+  (corresponds to well location in BMS MIC run; numerical 1-48)
   - *Sample* (biological replicate ID, must match metadata file;
     character)
   - *Cq* (calculated per qPCR reaction, “-1” default if no
@@ -45,23 +45,41 @@ To run the analysis, users must have two files:
 
 Site-occupancy detection modeling can be used to estimate:
 
-- **Presence (Z)**: likelihood a site is occupied by target eDNA
-- **Occupancy ($`\psi`$)**: probability that eDNA is present as a
-  function of habitat covariates at the site level
+- **Presence (z)**: proportion of model iterations in which eDNA
+  presence is inferred at a given site, based on the observed data—eDNA
+  qPCR detections, visual survey presence-absence, and habitat
+  covariates—even when neither molecular detection nor visual
+  observation occurred. When the target organism is visually observed,
+  the posterior probability of presence is fixed, but visual absences do
+  not override eDNA-based presence estimates.
+- **Occupancy ($`\psi`$)**: probability that a new site, with the same
+  covariates, is occupied (*i.e.*, the inherent probability of DNA
+  presence based on site characteristics), providing a predictive
+  measure of site suitability when detection errors are considered. eDNA
+  detections and non-detections are incorporated into the model as
+  observed data that inform the posterior probability of presence for a
+  specific site. These detections also influence the occupancy
+  probability and refine the relationship between covariates and
+  occupancy.
 - **Sample capture ($`\theta`$)**: how likely target eDNA is to make it
   into biological replicates at the field sampling stage
-  - **$`\theta_{11}`$**: capture within a sample from a site that is
-    occupied (*i.e.*, true positive capture) -**$`\theta_{10}`$**:
-    capture within a sample from a site that was not occupied (*i.e.*,
-    false-positive inference)
-  - **$`1-\theta_{11}`$**: false-negative capture rate
+  - **$`\theta_{11}`$**: probability of a sample from an occupied site
+    containing target eDNA (*i.e.*, true positive capture)
+    -**$`\theta_{10}`$**: capture within a sample from a site that was
+    not occupied (*i.e.*, false-positive sample inference)
+  - **$`1-\theta_{11}`$**: false-negative sample capture rate
 - **Detection ($`p`$)**: how likely technical replicates detect target
   eDNA at the laboratory stage)
-  - **$`p_{11}`$**: detection in a technical replicate from a sample
-    containing target eDNA (*i.e.*, true positive detection)
+  - **$`p_{11}`$**: probability of a positive qPCR replicate from a
+    sample containing target eDNA (*i.e.*, true positive detection)
   - **$`p_{10}`$**: detection in a technical replicate although not
     present in a sample (*i.e.*, false-positive error)
-  - **$`1-p_{11}`$**: false-negative detection rate
+  - **$`1-p_{11}`$**: false-negative replicate detection rate
+
+We therefore focus on the probability of **presence (z)** as an
+indicator of the underlying reality of nuisance alga eDNA presence and
+use the **occupancy probability (ψ)** to illustrate the uncertainty
+associated with imperfect detections across habitat covariates.
 
 ## a. Format data for use in R Shiny App
 
@@ -119,12 +137,8 @@ Load the file *2site_occupancy_data_shinyapp.csv* into the R Shiny App
 
 <!-- -->
 
-    ## Loading required package: usethis
-
     ## Skipping install of 'eDNAShinyApp' from a github remote, the SHA1 (2a1a7962) has not changed since last install.
     ##   Use `force = TRUE` to force installation
-
-    ## Loading required package: shiny
 
     ## 
     ## Listening on http://127.0.0.1:4509
@@ -175,11 +189,16 @@ covariates to visualize their impact on eDNA detections. For the
 example, we plot the effect of site depth on presence, occupancy, sample
 capture, and detection.
 
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
+    ## "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
+    ## "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
+    ## "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
+    ## "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
+    ## "cs")'
 
 ![](eDNA_siteoccupancy_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
