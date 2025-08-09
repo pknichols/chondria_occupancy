@@ -29,7 +29,9 @@ Cq data file must contain:
 * Efficiency (efficiency as calculated by BMS MIC; numeric)
 * ID (USER-ADDED COLUMN: continuous and unique identifier for each qPCR reaction, must not overlap; character)
 
-Open eDNA_occupancy.RMD in R Studio with working directory set to the location of the above files to run the example data. Output results of site-occupancy detection modeling for single-species qPCR eDNA assay (Griffin et al. 2020; Diana et al. 2021)
+Open eDNA_occupancy.RMD in R Studio with working directory set to the location of the above files to run the example data. Output results of site-occupancy detection modeling for single-species qPCR eDNA assay (Griffin et al. 2020; Diana et al. 2021). 
+
+NOTE: To improve model inference, user data should include all qPCR amplifications generated with identical sample protocol.
 
 **References:**
 * Diana, A., Matechou, E., Griffin, J. E., Buxton, A. S., & Griffiths, R. A. (2021). An RShiny app for modelling environmental DNA data: Accounting for false positive and false negative observation error. Ecography, 44(12), 1838–1844. https://doi.org/10.1111/ecog.05718
