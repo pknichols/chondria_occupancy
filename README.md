@@ -1,6 +1,6 @@
 # chondria
 
-# title: "Detection of a nuisance alga with environmental DNA"
+# title: "Nuisance algae environmental DNA site-occupancy detection modeling"
 ### authors: "Nichols P.K."
 ### year: 2025
 
