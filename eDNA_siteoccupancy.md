@@ -16,8 +16,8 @@ site-occupancy detection model predictors (habitat covariates).
 To run the analysis, users must have two files:
 
 - **Cq Data** $`\Rightarrow`$ qPCR data with Cq-values as exported from
-  the BMS MIC Workbench software. Columns must include: -*Well*
-  (corresponds to well location in BMS MIC run; numerical 1-48)
+  the BMS MIC Workbench software. Columns must include:
+  - *Well* (corresponds to well location in BMS MIC run; numerical 1-48)
   - *Sample* (biological replicate ID, must match metadata file;
     character)
   - *Cq* (calculated per qPCR reaction, “-1” default if no
@@ -66,7 +66,7 @@ Site-occupancy detection modeling can be used to estimate:
   into biological replicates at the field sampling stage
   - **$`\theta_{11}`$**: probability of a sample from an occupied site
     containing target eDNA (*i.e.*, true positive capture)
-    -**$`\theta_{10}`$**: capture within a sample from a site that was
+  - **$`\theta_{10}`$**: capture within a sample from a site that was
     not occupied (*i.e.*, false-positive sample inference)
   - **$`1-\theta_{11}`$**: false-negative sample capture rate
 - **Detection ($`p`$)**: how likely technical replicates detect target

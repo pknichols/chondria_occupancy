@@ -36,7 +36,7 @@ predictors=c("Lat", "Lon", "Depth_m") ##occupancy modeling habitat covariates (m
 To run the analysis, users must have two files:
 
 - **Cq Data** $\Rightarrow$ qPCR data with Cq-values as exported from the BMS MIC Workbench software. Columns must include:
-  -*Well* (corresponds to well location in BMS MIC run; numerical 1-48)
+  - *Well* (corresponds to well location in BMS MIC run; numerical 1-48)
   - *Sample* (biological replicate ID, must match metadata file; character)
   - *Cq* (calculated per qPCR reaction, "-1" default if no amplification; numeric)
   - *Efficiency* (efficiency as calculated by BMS MIC; numeric)
@@ -75,7 +75,7 @@ Site-occupancy detection modeling can be used to estimate:
 - **Occupancy ($\psi$)**: probability that a new site, with the same covariates, is occupied (*i.e.*, the inherent probability of DNA presence based on site characteristics), providing a predictive measure of site suitability when detection errors are considered. eDNA detections and non-detections are incorporated into the model as observed data that inform the posterior probability of presence for a specific site. These detections also influence the occupancy probability and refine the relationship between covariates and occupancy.
 - **Sample capture ($\theta$)**: how likely target eDNA is to make it into biological replicates at the field sampling stage
   - **$\theta_{11}$**: probability of a sample from an occupied site containing target eDNA (*i.e.*, true positive capture)
-  -**$\theta_{10}$**: capture within a sample from a site that was not occupied (*i.e.*, false-positive sample inference)
+  - **$\theta_{10}$**: capture within a sample from a site that was not occupied (*i.e.*, false-positive sample inference)
   - **$1-\theta_{11}$**: false-negative sample capture rate
 - **Detection ($p$)**: how likely technical replicates detect target eDNA at the laboratory stage)
   - **$p_{11}$**: probability of a positive qPCR replicate from a sample containing target eDNA (*i.e.*, true positive detection)
@@ -191,17 +191,20 @@ unzip("output.zip", exdir = "RShinyAppData") ##unzip model results into new fold
 ##Presence/Occupancy (z/psi)
 data.psi <- read.csv("RShinyAppData/download_psi.csv", header=T)
 data.psi$Site=NULL
-data.psi=cbind(metadata.unique,data.psi)
+data.psi$Site=occupancy.meta$Site
+data.psi=merge(metadata.unique,data.psi, by="Site")
 
 ##Sample Capture (theta)
 data.theta <- read.csv("RShinyAppData/download_theta11.csv", header=T)
 data.theta$Site=NULL
-data.theta=cbind(metadata.unique,data.theta)
+data.theta$Site=occupancy.meta$Site
+data.theta=merge(metadata.unique,data.theta, by="Site")
 
 ##Detection
 data.p <- read.csv("RShinyAppData/download_p11.csv", header=T)
 data.p$Site=NULL
-data.p=cbind(metadata.unique,data.p)
+data.p$Site=occupancy.meta$Site
+data.p=merge(metadata.unique,data.p, by="Site")
 ```
 
 # 4. Credibility Plots
@@ -214,11 +217,11 @@ Site presence and occupancy as estimated from the model are plotted side-by-side
 
 ```{r}
 occupancy.siteplot <- ggplot(data.psi, aes(Site, occupancy_Posterior.Mean)) +
-  ylim(0, 1) +
-  geom_point(aes(shape=Visual_presence), size = 2, alpha = 1) +
+  ylim(0, 1)  +
   geom_errorbar(aes(ymin = occupancy_probability_2.5Credible.Interval, 
                     ymax = occupancy_97.5Credible.Interval),
-                alpha = 1, width = 0.001) +
+                alpha = 0.5, width = 0.001) +
+  geom_point(aes(shape=Visual_presence, color=Visual_presence), size = 2, alpha = 1)+
   labs(x = "", y = "Occupancy (\u03A8)") +
   theme_bw() +
   theme(panel.grid.major = element_blank(), 
@@ -229,10 +232,10 @@ occupancy.siteplot <- ggplot(data.psi, aes(Site, occupancy_Posterior.Mean)) +
 
 presence.siteplot <- ggplot(data.psi, aes(Site, presence_Posterior.Mean)) +
   ylim(0, 1) +
-  geom_point(aes(shape=Visual_presence), size = 2, alpha = 1) +
   geom_errorbar(aes(ymin = presence_2.5Credible.Interval, 
                     ymax = presence_97.5Credible.Interval),
-                alpha = 1, width = 0.001) +
+                alpha = 0.5, width = 0.001) +
+  geom_point(aes(shape=Visual_presence, color=Visual_presence), size = 2, alpha = 1) +
   labs(x = "", y = "Presence (z)") +
   theme_bw() +
   theme(panel.grid.major = element_blank(), 
@@ -258,21 +261,21 @@ Detection parameters can be specifically plotted against habitat covariates to v
 
 ```{r}
 ##Presence (Z)
-presenceplot=ggplot(data.psi, aes(Depth_m, presence_Posterior.Mean)) +geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) +  geom_point(aes(shape = Visual_presence), size = 2, alpha=0.2) + geom_errorbar(aes(ymin=presence_2.5Credible.Interval, ymax=presence_97.5Credible.Interval), alpha=0.15, width = 0.001) + labs(x="", y="Presence (z)") +
+presenceplot=ggplot(data.psi, aes(Depth_m, presence_Posterior.Mean)) +geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) +  geom_errorbar(aes(ymin=presence_2.5Credible.Interval, ymax=presence_97.5Credible.Interval), alpha=0.5, width = 0.001) + labs(x="", y="Presence (z)") + geom_point(aes(shape = Visual_presence, color=Visual_presence), size = 2) + 
   theme_bw() + theme(legend.position="none")
 
 ##Occupancy (PSI)
-psiplot=ggplot(data.psi, aes(Depth_m, occupancy_Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5)+ ylim(c(0,1)) + geom_point(aes(shape = Visual_presence), size = 2, alpha=0.2) + geom_errorbar(aes(ymin=occupancy_probability_2.5Credible.Interval, ymax=occupancy_97.5Credible.Interval), alpha=0.15, width = 0.001) +
+psiplot=ggplot(data.psi, aes(Depth_m, occupancy_Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5)+ ylim(c(0,1)) + geom_errorbar(aes(ymin=occupancy_probability_2.5Credible.Interval, ymax=occupancy_97.5Credible.Interval), alpha=0.5, width = 0.001) + geom_point(aes(shape = Visual_presence, color=Visual_presence), size = 2) + 
   labs(x="", y="Occupancy (\u03A8)") +
   theme_bw() + theme(legend.position="none")
 
 ##Capture (THETA11)
-thetaplot=ggplot(data.theta, aes(Depth_m, Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) + geom_point(aes(shape = Visual_presence), size = 2, alpha=0.2) + geom_errorbar(aes(ymin=X2.5Credible.Interval, ymax=X97.5Credible.Interval), alpha=0.15, width = 0.001) +
+thetaplot=ggplot(data.theta, aes(Depth_m, Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) + geom_errorbar(aes(ymin=X2.5Credible.Interval, ymax=X97.5Credible.Interval), alpha=0.5, width = 0.001) + geom_point(aes(shape = Visual_presence, color=Visual_presence), size = 2) + 
   labs(x="Water Depth (m)", y="Capture (\u03B8)") +
   theme_bw() + theme(legend.position="none")
 
 ##Detection (P11)
-pplot=ggplot(data.p, aes(Depth_m, Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) + geom_point(aes(shape = Visual_presence), size = 2, alpha=0.2) + geom_errorbar(aes(ymin=X2.5Credible.Interval, ymax=X97.5Credible.Interval), alpha=0.15, width = 0.001) +
+pplot=ggplot(data.p, aes(Depth_m, Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) + geom_errorbar(aes(ymin=X2.5Credible.Interval, ymax=X97.5Credible.Interval), alpha=0.5, width = 0.001) + geom_point(aes(shape = Visual_presence, color=Visual_presence), size = 2) + 
   labs(x="Water Depth (m)", y="Detection (p)") +
   theme_bw() + theme(legend.position="right")
 
