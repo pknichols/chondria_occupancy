@@ -103,7 +103,7 @@ Load the file *2site_occupancy_data_shinyapp.csv* into the R Shiny App
     this code (or 3 for the example data)
 
   - Select which probabilities to estimate: *$`\psi`$, $`\theta_{11}`$,
-    $`\theta_{10}`$, $`p_{11}`$, $`p_{10}`$* to estimate all parameters
+    $`\theta_{10}`$, $`p_{11}`$, $`p_{10}`$ *to estimate all parameters
 
   - Increase *Number of chains* 1 $`\rightarrow`$ 2
 
@@ -116,6 +116,18 @@ Load the file *2site_occupancy_data_shinyapp.csv* into the R Shiny App
   output to working directory (save as default filename “output.zip”)
 
 - Close R Shiny App
+
+<!-- -->
+
+    ## Loading required package: usethis
+
+    ## Skipping install of 'eDNAShinyApp' from a github remote, the SHA1 (2a1a7962) has not changed since last install.
+    ##   Use `force = TRUE` to force installation
+
+    ## Loading required package: shiny
+
+    ## 
+    ## Listening on http://127.0.0.1:4509
 
 ## c. Load RShiny Data
 
