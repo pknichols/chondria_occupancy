@@ -1,8 +1,8 @@
 # chondria
 
-# title: "Nuisance algae environmental DNA site-occupancy detection modeling"
-### authors: "Nichols P.K."
-### year: 2025
+# "Nuisance algae environmental DNA site-occupancy detection modeling"
+### "Nichols P.K."
+### 2025
 
 This R Markdown file imports and processes qPCR data generated on a BMS MIC for single species site-occupancy detection modeling. Below are descriptions of the required files:
 
