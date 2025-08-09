@@ -51,16 +51,16 @@ To run the analysis, users must have two files:
   - *Lon* (site longitude; numeric)
   - *Depth_m* (site depth in meters; numeric)
   - *Visual_presence* (1 if visually observed, 0 or left blank otherwise)
-  -Any additional columns of model predictors or metadata (as applicable)
+  - Any additional columns of model predictors or metadata (as applicable)
   
 ```{r import data}
 ##METADATA
-metadata=read.csv("1qPCR_metadata.csv", header = T) ##choose metadata file
+metadata=read.csv(file.choose(), header = T) ##choose metadata file
 metadata$Visual_presence[is.na(metadata$Visual_presence)] = 0 ##code missing visual presence as visual absences
 metadata$Visual_presence=as.factor(metadata$Visual_presence) ##code visual presence as factor
 
 ##CQ-VALUES
-Cq.data=read.csv("1Cq_data.csv", header=T) ##choose Cq data file
+Cq.data=read.csv(file.choose(), header=T) ##choose Cq data file
 Cq.data$Sample=as.factor(as.character(Cq.data$Sample)) ##code Sample ID as factor
 Cq.data$qPCR_presence=as.integer(ifelse(Cq.data$Cq>0, 1, 0)) ##Code positive Cq-value as qPCR presence
 Cq.meta=merge(Cq.data, metadata, by="Sample") ##merge Cq-values with metadata
@@ -95,7 +95,7 @@ Two files are saved to the working directory:
 - *site_occupancy_data_shinyapp.csv* $\Rightarrow$ occupancy modeling input file to be used with the application
 - *site_occupancy_data_sitenames.csv* $\Rightarrow$ copy of the occupancy input file with site names for reference
 
-```{r}
+```{r format for shinyapp}
 ##format data frame
 occupancy.eDNA=as.data.frame(Cq) ##duplicate dataframe
 occupancy.eDNA=arrange(occupancy.eDNA, Site) ##order by Site
@@ -156,7 +156,7 @@ Load the file *2site_occupancy_data_shinyapp.csv* into the R Shiny App **Data** 
 
 - Close R Shiny App
 
-```{r}
+```{r shinyapp}
 library(devtools)
 install_github("alexdiana1992/eDNAShinyApp", ref = "master")
 library(eDNAShinyApp)

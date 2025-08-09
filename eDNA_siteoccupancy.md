@@ -38,8 +38,9 @@ To run the analysis, users must have two files:
   - *Lon* (site longitude; numeric)
   - *Depth_m* (site depth in meters; numeric)
   - *Visual_presence* (1 if visually observed, 0 or left blank
-    otherwise) -Any additional columns of model predictors or metadata
-    (as applicable)
+    otherwise)
+  - Any additional columns of model predictors or metadata (as
+    applicable)
 
 # 3. OCCUPANCY MODELING
 
@@ -121,7 +122,7 @@ Load the file *2site_occupancy_data_shinyapp.csv* into the R Shiny App
     this code (or 3 for the example data)
 
   - Select which probabilities to estimate: *$`\psi`$, $`\theta_{11}`$,
-    $`\theta_{10}`$, $`p_{11}`$, $`p_{10}`$ *to estimate all parameters
+    $`\theta_{10}`$, $`p_{11}`$, $`p_{10}`$* to estimate all parameters
 
   - Increase *Number of chains* 1 $`\rightarrow`$ 2
 
@@ -134,14 +135,6 @@ Load the file *2site_occupancy_data_shinyapp.csv* into the R Shiny App
   output to working directory (save as default filename “output.zip”)
 
 - Close R Shiny App
-
-<!-- -->
-
-    ## Skipping install of 'eDNAShinyApp' from a github remote, the SHA1 (2a1a7962) has not changed since last install.
-    ##   Use `force = TRUE` to force installation
-
-    ## 
-    ## Listening on http://127.0.0.1:4509
 
 ## c. Load RShiny Data
 
@@ -180,7 +173,7 @@ proportion of model iterations where it was estimated to be present.
 Occupancy is the inherent probability a site will be occupied, given the
 included habitat covariates.
 
-![](eDNA_siteoccupancy_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](eDNA_siteoccupancy_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ## b. Habitat covariate: Site Depth
 
@@ -189,18 +182,13 @@ covariates to visualize their impact on eDNA detections. For the
 example, we plot the effect of site depth on presence, occupancy, sample
 capture, and detection.
 
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
-    ## "cs")'
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
-    ## "cs")'
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
-    ## "cs")'
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
-    ## "cs")'
-    ## `geom_smooth()` using formula = 'y ~ s(x, bs =
-    ## "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
+    ## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'
 
-![](eDNA_siteoccupancy_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](eDNA_siteoccupancy_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 # 4. NEGATIVE CONTROLS
 
