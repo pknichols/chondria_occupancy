@@ -1,5 +1,3 @@
-# chondria
-
 # Site-occupancy detection modeling of nuisance algae from eDNA qPCR detections
 ### Nichols P.K.
 ### 2025
