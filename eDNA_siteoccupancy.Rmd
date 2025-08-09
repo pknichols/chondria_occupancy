@@ -1,0 +1,300 @@
+---
+title: "Nuisance Algae Site-Occupancy Detection"
+author: "Patrick Nichols"
+date: "8/8/2025"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+knitr::opts_chunk$set(warning = F)
+library(here)
+knitr::opts_knit$set(root.dir = here())
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggpubr)
+```
+
+# 1. SETUP
+
+Users must set up the number of qPCR technical replicates used throughout the study (this must be constant across all samples).
+
+Specify which columns of the metadata file will be used as site-occupancy detection model predictors (habitat covariates).
+
+```{r user settings}
+##qPCR Replicates
+num.reps=3 ##set number of qPCR replicates per sample
+
+##Model Predictors
+predictors=c("Lat", "Lon", "Depth_m") ##occupancy modeling habitat covariates (must use exact column name from metadata)
+```
+
+# 2. IMPORT DATA FILES
+
+To run the analysis, users must have two files:
+
+- **Cq Data** $\Rightarrow$ qPCR data with Cq-values as exported from the BMS MIC software. Columns must include:
+  -*Well* (corresponds to well location in BMS MIC run; numerical 1-48)
+  - *Sample* (biological replicate ID, must match metadata file; character)
+  - *Cq* (calculated per qPCR reaction, "-1" default if no amplification; numeric)
+  - *Efficiency* (efficiency as calculated by BMS MIC; numeric)
+  - *ID* (USER-ADDED COLUMN: continuous and unique identifier for each qPCR reaction; character)
+
+- **Sample Metadata** $\Rightarrow$ metadata file with the following required columns:
+  - *Sample* (sample identifier, must match Cq data; character)
+  - *Biological_replicate* (codes which biological replicate sample belongs to; numerical)
+  - *Site* (site location identifier; character)
+  - *Sample_type* (must be either "Control" for negative control samples or any other character values, such as "Sample" for biological samples)
+  - *Lat* (site latitude; numeric)
+  - *Lon* (site longitude; numeric)
+  - *Depth_m* (site depth in meters; numeric)
+  - *Visual_presence* (1 if visually observed, 0 or left blank otherwise)
+  -Any additional columns of model predictors or metadata (as applicable)
+  
+```{r import data}
+##METADATA
+metadata=read.csv("1qPCR_metadata.csv", header = T) ##choose metadata file
+metadata$Visual_presence[is.na(metadata$Visual_presence)] = 0 ##code missing visual presence as visual absences
+metadata$Visual_presence=as.factor(metadata$Visual_presence) ##code visual presence as factor
+
+##CQ-VALUES
+Cq.data=read.csv("1Cq_data.csv", header=T) ##choose Cq data file
+Cq.data$Sample=as.factor(as.character(Cq.data$Sample)) ##code Sample ID as factor
+Cq.data$qPCR_presence=as.integer(ifelse(Cq.data$Cq>0, 1, 0)) ##Code positive Cq-value as qPCR presence
+Cq.meta=merge(Cq.data, metadata, by="Sample") ##merge Cq-values with metadata
+Cq=subset(Cq.meta, Sample_type != "Control") ##remove control samples from analysis
+```
+
+# 3. OCCUPANCY MODELING
+
+Site-occupancy detection modeling can be used to estimate:
+
+- **Presence (Z)**: likelihood a site is occupied by target eDNA
+- **Occupancy ($\psi$)**: probability that eDNA is present as a function of habitat covariates at the site level
+- **Sample capture ($\theta$)**: how likely target eDNA is to make it into biological replicates at the field sampling stage
+  - **$\theta_{11}$**: capture within a sample from a site that is occupied (*i.e.*, true positive capture)
+  -**$\theta_{10}$**: capture within a sample from a site that was not occupied (*i.e.*, false-positive inference)
+  - **$1-\theta_{11}$**: false-negative capture rate
+- **Detection ($p$)**: how likely technical replicates detect target eDNA at the laboratory stage)
+  - **$p_{11}$**: detection in a technical replicate from a sample containing target eDNA (*i.e.*, true positive detection)
+  - **$p_{10}$**: detection in a technical replicate although not present in a sample (*i.e.*, false-positive error)
+  - **$1-p_{11}$**: false-negative detection rate
+
+## a. Format data for use in R Shiny App
+
+qPCR detection data is changed to the wide format that is compatible with the R Shiny App for single-species occupancy modeling. 
+
+Two files are saved to the working directory:
+
+- *site_occupancy_data_shinyapp.csv* $\Rightarrow$ occupancy modeling input file to be used with the application
+- *site_occupancy_data_sitenames.csv* $\Rightarrow$ copy of the occupancy input file with site names for reference
+
+```{r}
+##format data frame
+occupancy.eDNA=as.data.frame(Cq) ##duplicate dataframe
+occupancy.eDNA=arrange(occupancy.eDNA, Site) ##order by Site
+occupancy.eDNA$qPCR_replicate=rep(1:num.reps) ##code qPCR technical replicates
+occupancy.eDNA=occupancy.eDNA %>% select(Biological_replicate, qPCR_replicate, Site, qPCR_presence)
+
+##spread to wide format
+occupancy.wide <- occupancy.eDNA %>%
+  group_by(Site, Biological_replicate) %>%
+  summarise(total_presence = sum(qPCR_presence), .groups = "drop") %>%
+  mutate(Biological_replicate = paste0("Sample", Biological_replicate)) %>%
+  pivot_wider(
+    names_from = Biological_replicate,
+    values_from = total_presence
+  )
+
+cols_to_keep <- unique(c("Site", "Visual_presence", predictors))
+
+##add metadata without repeated entries
+metadata.unique <- Cq %>%
+  distinct(Site, .keep_all = TRUE) %>%
+  select(all_of(cols_to_keep)) ##keep only model predictors
+
+occupancy.meta=merge(occupancy.wide, metadata.unique, by="Site") ##merge metadata
+write.csv(occupancy.meta, "site_occupancy_data_sitenames.csv", row.names = F, fileEncoding = "UTF-8") ##write file to directory
+
+occupancy=occupancy.meta
+occupancy$Site <- NULL
+write.csv(occupancy, "site_occupancy_data_shinyapp.csv", row.names = F, fileEncoding = "UTF-8") ##write file to directory
+```
+
+## b. Run R Shiny App
+
+Load the file *2site_occupancy_data_shinyapp.csv* into the R Shiny App **Data** tab.
+
+- Under **Data** tab, assign columns: 
+
+  - *Column of confirmed presence* $\Rightarrow$ "Visual_presence" (or column 3 in the example data)
+  - *Column of continuous covariates* $\Rightarrow$ "Lat", "Lon", "Depth_m" (or 4,5,6 in the example data)
+  - *Column of categorical covariates* $\Rightarrow$ Optional categorical covariate column (or 0 in the example data)
+  - *Interaction between covariates* $\Rightarrow$ Lat:Lon spatial interaction (or 4:5 in the example data)
+
+  - *Note:* be sure to check "Header" box to hide column names during analysis (otherwise app will crash)
+
+- Under **Settings** tab: 
+
+  - Set *Number of Independent eDNA qPCR replicates* to "num.reps" in this code (or 3 for the example data)
+
+  - Select which probabilities to estimate: *$\psi$, $\theta_{11}$, $\theta_{10}$, $p_{11}$, $p_{10}$ *to estimate all parameters
+
+  - Increase *Number of chains* 1 $\rightarrow$ 2
+
+  - Hit *Run*
+
+  - *Note:* increase model iterations if model fails to converge and re-run
+
+- Go to **Results** tab: scroll to bottom of the window and *Download* output to working directory (save as default filename "output.zip")
+
+- Close R Shiny App
+
+```{r}
+library(devtools)
+install_github("alexdiana1992/eDNAShinyApp", ref = "master")
+library(eDNAShinyApp)
+runeDNAShinyApp() #load "2site_occupancy_data_shinyapp.csv"
+```
+
+## c. Load RShiny Data
+
+Unzips RShiny App results into a new folder within the working directory. The following files are used to plot parameter estimates:
+
+- *download_psi.csv*
+- *download_theta11.csv*
+- *download_p11.csv*
+
+The remaining files are not used, but can be referenced for remaining parameter estimates:
+
+- *download_theta10.csv*
+- *download_p10.csv*
+
+And habitat covariate predictors:
+
+- *download_beta_psi.csv*
+- *download_beta_theta11.csv*
+- *download_beta_theta10.csv*
+- *download_beta_p11.csv*
+- *download_beta_p10.csv*
+
+
+```{r load occupancy data}
+unzip("output.zip", exdir = "RShinyAppData") ##unzip model results into new folder
+
+##Presence/Occupancy (z/psi)
+data.psi <- read.csv("RShinyAppData/download_psi.csv", header=T)
+data.psi$Site=NULL
+data.psi=cbind(metadata.unique,data.psi)
+
+##Sample Capture (theta)
+data.theta <- read.csv("RShinyAppData/download_theta11.csv", header=T)
+data.theta$Site=NULL
+data.theta=cbind(metadata.unique,data.theta)
+
+##Detection
+data.p <- read.csv("RShinyAppData/download_p11.csv", header=T)
+data.p$Site=NULL
+data.p=cbind(metadata.unique,data.p)
+```
+
+# 4. Credibility Plots
+
+Results from site-occupancy detection modeling are visualized in the following plots.
+
+## a. Site Occupancy
+
+Site presence and occupancy as estimated from the model are plotted side-by-side for each unique site. Presence is fixed (1) if visual observed marked the target as present, otherwise it is estimated as the proportion of model iterations where it was estimated to be present. Occupancy is the inherent probability a site will be occupied, given the included habitat covariates.
+
+```{r}
+occupancy.siteplot <- ggplot(data.psi, aes(Site, occupancy_Posterior.Mean)) +
+  ylim(0, 1) +
+  geom_point(aes(shape=Visual_presence), size = 2, alpha = 1) +
+  geom_errorbar(aes(ymin = occupancy_probability_2.5Credible.Interval, 
+                    ymax = occupancy_97.5Credible.Interval),
+                alpha = 1, width = 0.001) +
+  labs(x = "", y = "Occupancy (\u03A8)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.ticks.y = element_line()) + coord_flip()
+
+
+presence.siteplot <- ggplot(data.psi, aes(Site, presence_Posterior.Mean)) +
+  ylim(0, 1) +
+  geom_point(aes(shape=Visual_presence), size = 2, alpha = 1) +
+  geom_errorbar(aes(ymin = presence_2.5Credible.Interval, 
+                    ymax = presence_97.5Credible.Interval),
+                alpha = 1, width = 0.001) +
+  labs(x = "", y = "Presence (z)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.ticks.y = element_line()) +
+  coord_flip()
+
+ggarrange(
+  presence.siteplot, occupancy.siteplot,  
+  ncol = 2, nrow = 1, 
+  labels = "AUTO",
+  font.label = list(size = 12, face = "bold"), 
+  common.legend = T, 
+  legend = "bottom", 
+  align = "none"
+)
+```
+
+## b. Habitat covariate: Site Depth
+
+Detection parameters can be specifically plotted against habitat covariates to visualize their impact on eDNA detections. For the example, we plot the effect of site depth on presence, occupancy, sample capture, and detection.
+
+```{r}
+##Presence (Z)
+presenceplot=ggplot(data.psi, aes(Depth_m, presence_Posterior.Mean)) +geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) +  geom_point(aes(shape = Visual_presence), size = 2, alpha=0.2) + geom_errorbar(aes(ymin=presence_2.5Credible.Interval, ymax=presence_97.5Credible.Interval), alpha=0.15, width = 0.001) + labs(x="", y="Presence (z)") +
+  theme_bw() + theme(legend.position="none")
+
+##Occupancy (PSI)
+psiplot=ggplot(data.psi, aes(Depth_m, occupancy_Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5)+ ylim(c(0,1)) + geom_point(aes(shape = Visual_presence), size = 2, alpha=0.2) + geom_errorbar(aes(ymin=occupancy_probability_2.5Credible.Interval, ymax=occupancy_97.5Credible.Interval), alpha=0.15, width = 0.001) +
+  labs(x="", y="Occupancy (\u03A8)") +
+  theme_bw() + theme(legend.position="none")
+
+##Capture (THETA11)
+thetaplot=ggplot(data.theta, aes(Depth_m, Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) + geom_point(aes(shape = Visual_presence), size = 2, alpha=0.2) + geom_errorbar(aes(ymin=X2.5Credible.Interval, ymax=X97.5Credible.Interval), alpha=0.15, width = 0.001) +
+  labs(x="Water Depth (m)", y="Capture (\u03B8)") +
+  theme_bw() + theme(legend.position="none")
+
+##Detection (P11)
+pplot=ggplot(data.p, aes(Depth_m, Posterior.Mean)) + geom_smooth(method="gam", se=F, na.rm=T, lwd=0.5) + ylim(c(0,1)) + geom_point(aes(shape = Visual_presence), size = 2, alpha=0.2) + geom_errorbar(aes(ymin=X2.5Credible.Interval, ymax=X97.5Credible.Interval), alpha=0.15, width = 0.001) +
+  labs(x="Water Depth (m)", y="Detection (p)") +
+  theme_bw() + theme(legend.position="right")
+
+#PLOTTED TOGETHER
+ggarrange(
+  presenceplot,  
+  psiplot,  
+  thetaplot,  
+  pplot,  
+  ncol = 2, nrow = 2, 
+  labels = "AUTO",
+  font.label = list(size = 12, face = "bold"), 
+  common.legend = T, 
+  legend = "bottom", 
+  align = "none"
+)
+```
+
+# 4. NEGATIVE CONTROLS
+
+Negative control samples are identified and flagged if they produced a positive qPCR amplification (positive Cq-value). Consider removing corresponding contaminated samples from the analysis.
+
+```{r}
+Cq.controls=subset(Cq.meta, Sample_type=="Control") ##subset control samples for contamination identification
+
+contamination=subset(Cq.controls, Cq>0) ##identify potential contamination
+
+print(paste(contamination$Sample, "is contaminated. Check the corresponding site!"))
+```
