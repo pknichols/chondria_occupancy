@@ -1,10 +1,10 @@
 # chondria
 
-# "Nuisance algae environmental DNA site-occupancy detection modeling"
-### "Nichols P.K."
+# Site-occupancy detection modeling of nuisance algae from eDNA qPCR detections
+### Nichols P.K.
 ### 2025
 
-This R Markdown file imports and processes qPCR data generated on a BMS MIC for single species site-occupancy detection modeling. Below are descriptions of the required files:
+This R Markdown file imports and processes qPCR data generated on a Bio Molecular Systems MIC for single species site-occupancy detection modeling. The following files are required:
 
 ## 1. SAMPLE METADATA
 Metadata file with sample and site information. Example file: "1qPCR_metadata.csv"
@@ -31,4 +31,4 @@ Cq data file must contain:
 * Efficiency (efficiency as calculated by BMS MIC; numeric)
 * ID (USER-ADDED COLUMN: continuous and unique identifier for each qPCR reaction, must match platedata; character)
 
-Run eDNA_occupancy.RMD with working directory set to the location of the above files.
+Open eDNA_occupancy.RMD in R Studio with working directory set to the location of the above files to run the example data.
