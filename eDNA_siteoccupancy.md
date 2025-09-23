@@ -121,8 +121,7 @@ Load the file *2site_occupancy_data_shinyapp.csv* into the R Shiny App
   - Set *Number of Independent eDNA qPCR replicates* to “num.reps” in
     this code (or 3 for the example data)
 
-  - Select which probabilities to estimate: *$`\psi`$, $`\theta_{11}`$,
-    $`\theta_{10}`$, $`p_{11}`$, $`p_{10}`$* to estimate all parameters
+  - Select which probabilities to estimate: *$\psi$, $\theta_{11}$, $\theta_{10}$, $p_{11}$, $p_{10}$* to estimate all parameters
 
   - Increase *Number of chains* 1 $`\rightarrow`$ 2
 
@@ -197,3 +196,4 @@ positive qPCR amplification (positive Cq-value). Consider removing
 corresponding contaminated samples from the analysis.
 
     ## [1] "OFB is contaminated. Check the corresponding site!"
+
