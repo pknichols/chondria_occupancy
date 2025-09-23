@@ -2,7 +2,7 @@
 ### Nichols P.K.
 ### 2025
 
-This R Markdown file imports and processes qPCR data generated on a Bio Molecular Systems MIC for single species site-occupancy detection modeling as similarly performed for tracking the nuisance alga, Chondria tumulosa (Nichols et al. 2025). The following files are required:
+This R Markdown file imports and processes qPCR data generated on a Bio Molecular Systems MIC for single species site-occupancy detection modeling as similarly performed for tracking the nuisance alga, Chondria tumulosa (Nichols et al. 2025, Nichols & Marko 2025). The following files are required:
 
 ## 1. SAMPLE METADATA
 Metadata file with sample and site information. Example file: "1qPCR_metadata.csv"
@@ -40,3 +40,4 @@ NOTE: To improve model inference, user data should include all qPCR amplificatio
 
 * Nichols, P. K., Fraiola, K. M. S., Sherwood, A. R., Hauk, B. B., Jr, K. H. L., Davis, C. A., Fumo, J. T., Counsell, C. W. W., Williams, T. M., Spalding, H. L., & Marko, P. B. (2025). Navigating uncertainty in environmental DNA detection of a nuisance marine macroalga. PLOS ONE, 20(2), e0318414. https://doi.org/10.1371/journal.pone.0318414
 
+* Nichols, P. K., & Marko, P. B. (2025). No pump, no problem: evaluating passive eDNA sampling for marine biomonitoring of a nuisance macroalga. PeerJ, 13:e19939. https://doi.org/10.7717/peerj.19939
