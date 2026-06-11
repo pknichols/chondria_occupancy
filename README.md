@@ -10,7 +10,7 @@
 This R Markdown file imports and processes qPCR data generated on a [Bio Molecular Systems MIC](https://biomolecularsystems.com/mic-pcr/) for single species site-occupancy detection modeling as similarly performed for tracking the nuisance alga, *Chondria tumulosa* (Nichols et al. 2025a, Nichols & Marko 2025) and non-indigenous *Acanthophora spicifera* (Nichols et al. 2025b). 
 
 
-![Site Occupancy Plot](eDNA_siteoccupancy_files/figure-gfm/unnamed-chunk-1-1.png.jpg)
+![Site Occupancy Plot](eDNA_siteoccupancy_files/figure-gfm/unnamed-chunk-1-1.png)
 
 
 The following files are required:
