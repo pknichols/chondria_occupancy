@@ -1,8 +1,10 @@
 # Site-occupancy detection modeling of nuisance algae from eDNA qPCR detections
 ### Nichols P.K.
-### 2025
+### Updated 2026
 
-This R Markdown file imports and processes qPCR data generated on a Bio Molecular Systems MIC for single species site-occupancy detection modeling as similarly performed for tracking the nuisance alga, *Chondria tumulosa* (Nichols et al. 2025, Nichols & Marko 2025). The following files are required:
+This R Markdown file imports and processes qPCR data generated on a Bio Molecular Systems MIC for single species site-occupancy detection modeling as similarly performed for tracking the nuisance alga, *Chondria tumulosa* (Nichols et al. 2025a, Nichols & Marko 2025) and non-indigenous *Acanthophora spicifera* (Nichols et al. 2025b). 
+
+The following files are required:
 
 ## 1. SAMPLE METADATA
 Metadata file with sample and site information. Example file: "1qPCR_metadata.csv"
@@ -12,11 +14,11 @@ Metadata file must contain:
 * Biological_replicate (codes which biological replicate sample belongs to; numerical)
 * Site (site location identifier; character)
 * Sample_type (must be either "Control" or any other character values, such as "Sample" for biological samples)
-* Lat (site latitude; numeric)
-* Lon (site longitude; numeric)
+* Lat (site latitude; numeric decimal degrees)
+* Lon (site longitude; numeric decimal degrees)
 * Depth_m (site depth in meters; numeric)
 * Visual_presence (1 if visually observed, 0 or left blank otherwise)
-* Any additional columns of model predictors or metadata (as applicable)
+* Any additional columns of model predictors or metadata as applicable for modeling occupancy (e.g., filtration volume, deployment duration, season, etc.)
 
 ## 2. qPCR Cq-VALUES
 Combined file with all Cq-values generated from molecular qPCR detections. Example file: "1Cq_data.csv"
@@ -32,13 +34,15 @@ Cq data file must contain:
 Open eDNA_occupancy.RMD in R Studio with working directory set to the location of the above files to run the example data. Output results of site-occupancy detection modeling for single-species qPCR eDNA assay (Griffin et al. 2020; Diana et al. 2021). 
 
 > [!IMPORTANT]
-> *To improve model inference, user data should include all qPCR amplifications generated with identical sample protocol.*
+> *To improve model inference, user data should include all qPCR amplifications generated with identical sample protocol (i.e., all available technical and biological replicates, including those already analyzed).*
 
 **References:**
 * Diana, A., Matechou, E., Griffin, J. E., Buxton, A. S., & Griffiths, R. A. (2021). An RShiny app for modelling environmental DNA data: Accounting for false positive and false negative observation error. Ecography, 44(12), 1838–1844. https://doi.org/10.1111/ecog.05718
 
 * Griffin, J. E., Matechou, E., Buxton, A. S., Bormpoudakis, D., & Griffiths, R. A. (2020). Modelling Environmental DNA Data; Bayesian Variable Selection Accounting for False Positive and False Negative Errors. Journal of the Royal Statistical Society Series C: Applied Statistics, 69(2), 377–392. https://doi.org/10.1111/rssc.12390
 
-* Nichols, P. K., Fraiola, K. M. S., Sherwood, A. R., Hauk, B. B., Jr, K. H. L., Davis, C. A., Fumo, J. T., Counsell, C. W. W., Williams, T. M., Spalding, H. L., & Marko, P. B. (2025). Navigating uncertainty in environmental DNA detection of a nuisance marine macroalga. PLOS ONE, 20(2), e0318414. https://doi.org/10.1371/journal.pone.0318414
+* Nichols, P. K., Fraiola, K. M. S., Sherwood, A. R., Hauk, B. B., Jr, K. H. L., Davis, C. A., Fumo, J. T., Counsell, C. W. W., Williams, T. M., Spalding, H. L., & Marko, P. B. (2025a). Navigating uncertainty in environmental DNA detection of a nuisance marine macroalga. PLOS ONE, 20(2), e0318414. https://doi.org/10.1371/journal.pone.0318414
+  
+* Nichols, P. K., A. R. Sherwood, K. M. S. Fraiola, et al. 2025b. Detection of a Non-Indigenous Marine Macroalga (Acanthophora spicifera) With Environmental DNA From Surface Seawater. Aquaculture, Fish and Fisheries5, no. 6: e70135. https://doi.org/10.1002/aff2.70135
 
 * Nichols, P. K., & Marko, P. B. (2025). No pump, no problem: evaluating passive eDNA sampling for marine biomonitoring of a nuisance macroalga. PeerJ, 13:e19939. https://doi.org/10.7717/peerj.19939
