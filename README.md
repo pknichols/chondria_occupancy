@@ -27,7 +27,7 @@ Metadata file must contain:
 * Lon (site longitude; numeric decimal degrees)
 * Depth_m (site depth in meters; numeric)
 * Visual_presence (1 if visually observed, 0 or left blank otherwise)
-* Any additional columns of model predictors or metadata as applicable for modeling occupancy (e.g., filtration volume, deployment duration, season, etc.)
+* Any additional columns of model predictors or metadata as applicable for modeling occupancy (e.g., filtration volume, deployment duration, season, substrate, etc.)
 
 ## 2. qPCR Cq-VALUES
 Combined file with all Cq-values generated from molecular qPCR detections. Example file: "1Cq_data.csv"
