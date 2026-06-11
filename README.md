@@ -38,7 +38,7 @@ Cq data file must contain:
 
 Open eDNA_occupancy.RMD in R Studio with working directory set to the location of the above files to run the example data. Output results of site-occupancy detection modeling for single-species qPCR eDNA assay (Griffin et al. 2020; Diana et al. 2021). 
 
-> [!IMPORTANT]
+> [!NOTE]
 > *To improve model inference, user data should include all qPCR amplifications generated with identical sample protocol (i.e., all available technical and biological replicates, including those already analyzed).*
 
 **References:**
