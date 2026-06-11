@@ -48,6 +48,6 @@ Open eDNA_occupancy.RMD in R Studio with working directory set to the location o
 
 * Nichols, P. K., Fraiola, K. M. S., Sherwood, A. R., Hauk, B. B., Jr, K. H. L., Davis, C. A., Fumo, J. T., Counsell, C. W. W., Williams, T. M., Spalding, H. L., & Marko, P. B. (2025a). Navigating uncertainty in environmental DNA detection of a nuisance marine macroalga. PLOS ONE, 20(2), e0318414. https://doi.org/10.1371/journal.pone.0318414
   
-* Nichols, P. K., A. R. Sherwood, K. M. S. Fraiola, et al. 2025b. Detection of a Non-Indigenous Marine Macroalga (Acanthophora spicifera) With Environmental DNA From Surface Seawater. Aquaculture, Fish and Fisheries5, no. 6: e70135. https://doi.org/10.1002/aff2.70135
+* Nichols, P. K., A. R. Sherwood, K. M. S. Fraiola, et al. (2025b). Detection of a Non-Indigenous Marine Macroalga (*Acanthophora spicifera*) With Environmental DNA From Surface Seawater. Aquaculture, Fish and Fisheries5, no. 6: e70135. https://doi.org/10.1002/aff2.70135
 
 * Nichols, P. K., & Marko, P. B. (2025). No pump, no problem: evaluating passive eDNA sampling for marine biomonitoring of a nuisance macroalga. PeerJ, 13:e19939. https://doi.org/10.7717/peerj.19939
